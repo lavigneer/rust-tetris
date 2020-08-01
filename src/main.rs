@@ -4,7 +4,10 @@ extern crate gtk;
 use gio::prelude::*;
 use gtk::prelude::*;
 
-use gtk::{Application, ApplicationWindow, Button};
+use gtk::{Application, ApplicationWindow, Box, Separator};
+
+mod game_board;
+mod score_board;
 
 fn main() {
     let application =
@@ -13,14 +16,21 @@ fn main() {
 
     application.connect_activate(|app| {
         let window = ApplicationWindow::new(app);
-        window.set_title("First GTK+ Program");
-        window.set_default_size(350, 70);
+        window.set_title("Tetris");
+        window.set_default_size(1280, 720);
 
-        let button = Button::with_label("Click me!");
-        button.connect_clicked(|_| {
-            println!("Clicked!");
-        });
-        window.add(&button);
+        let container = Box::new(gtk::Orientation::Horizontal, 0);
+
+        let game_board = game_board::GameBoard::new();
+        container.pack_start(game_board.widget(), true, true, 0);
+
+        let separator = Separator::new(gtk::Orientation::Vertical);
+        container.pack_start(&separator, false, false, 0);
+
+        let score_board = score_board::ScoreBoard::new();
+        container.add(&score_board.component);
+
+        window.add(&container);
 
         window.show_all();
     });
